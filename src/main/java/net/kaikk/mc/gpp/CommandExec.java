@@ -458,17 +458,19 @@ public class CommandExec implements CommandExecutor {
 					return false;
 				}
 			}
-			
-			// if no permission to manage permissions, error message
-			final String errorMessage = claim.canGrantPermission(player);
-			if (errorMessage != null) {
-				GriefPreventionPlus.sendMessage(player, TextMode.Err, errorMessage);
-				return true;
+
+
+			if (!player.hasPermission("griefprevention.trustlist")){
+				// if no permission to manage permissions, error message
+				final String errorMessage = claim.canGrantPermission(player);
+				if (errorMessage != null) {
+					GriefPreventionPlus.sendMessage(player, TextMode.Err, errorMessage);
+					return true;
+				}
 			}
 
 			// otherwise build a list of explicit permissions by permission level and send that to the player
 			player.sendMessage(claim.getTrustList());
-
 			return true;
 		}
 

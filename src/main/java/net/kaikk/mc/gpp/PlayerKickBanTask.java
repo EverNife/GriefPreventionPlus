@@ -40,7 +40,7 @@ class PlayerKickBanTask implements Runnable {
 	public void run() {
 		if (this.banReason != null) {
 			// ban
-			this.player.setBanned(true);
+			//this.player.setBanned(true);
 
 			// kick
 			if (this.player.isOnline()) {

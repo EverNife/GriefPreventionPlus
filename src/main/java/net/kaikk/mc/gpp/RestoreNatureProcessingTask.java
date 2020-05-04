@@ -160,6 +160,8 @@ class RestoreNatureProcessingTask implements Runnable {
 		GriefPreventionPlus.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(GriefPreventionPlus.getInstance(), task);
 	}
 
+	private static final Biome BIOME_BEACH = Biome.valueOf("BEACH"); //On 1.7.10. there is no "BEACHES"
+
 	private void coverSurfaceStone() {
 		for (int x = 1; x < (this.snapshots.length - 1); x++) {
 			for (int z = 1; z < (this.snapshots[0][0].length - 1); z++) {
@@ -167,7 +169,7 @@ class RestoreNatureProcessingTask implements Runnable {
 				final BlockSnapshot block = this.snapshots[x][y][z];
 
 				if ((block.typeId == Material.STONE.getId()) || (block.typeId == Material.GRAVEL.getId()) || (block.typeId == Material.SOIL.getId()) || (block.typeId == Material.DIRT.getId()) || (block.typeId == Material.SANDSTONE.getId())) {
-					if ((this.biome == Biome.DESERT) || (this.biome == Biome.DESERT_HILLS) || (this.biome == Biome.BEACH)) {
+					if ((this.biome == Biome.DESERT) || (this.biome == Biome.DESERT_HILLS) || (this.biome == BIOME_BEACH)) {
 						this.snapshots[x][y][z].typeId = Material.SAND.getId();
 					} else {
 						this.snapshots[x][y][z].typeId = Material.GRASS.getId();
@@ -661,7 +663,7 @@ class RestoreNatureProcessingTask implements Runnable {
 		}
 
 		// these are unnatural in sandy biomes, but not elsewhere
-		if ((biome == Biome.DESERT) || (biome == Biome.DESERT_HILLS) || (biome == Biome.BEACH) || (environment != Environment.NORMAL)) {
+		if ((biome == Biome.DESERT) || (biome == Biome.DESERT_HILLS) || (biome == BIOME_BEACH) || (environment != Environment.NORMAL)) {
 			playerBlocks.add(Material.LEAVES.getId());
 			playerBlocks.add(Material.LOG.getId());
 		}
