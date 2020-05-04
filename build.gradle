@@ -1,0 +1,32 @@
+group = 'net.kaikk.mc'
+version = '13.3b'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/groups/public/'
+    }
+}
+
+dependencies {
+    compile name: "Vault-1.4.1"
+    compile name: "WorldGuard-6.1"
+    compile name: "worldedit-bukkit-6.0"
+    compile 'org.bukkit:bukkit:1.12.2-R0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
