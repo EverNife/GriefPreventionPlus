@@ -789,6 +789,7 @@ class PlayerEventHandler implements Listener {
 
 				GriefPreventionPlus.sendMessage(player, TextMode.Info, Messages.ShowNearbyClaims, String.valueOf(claims.size()));
 
+				event.setCancelled(true);
 				return;
 			}
 
@@ -853,6 +854,7 @@ class PlayerEventHandler implements Listener {
 						GriefPreventionPlus.sendMessage(player, TextMode.Info, Messages.PlayerOfflineTime, String.valueOf(daysElapsed));
 					}
 				}
+				event.setCancelled(true);
 			}
 
 			return;
@@ -1310,6 +1312,7 @@ class PlayerEventHandler implements Listener {
 						GriefPreventionPlus.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlap);
 						final Visualization visualization = Visualization.FromClaim(claim, clickedBlock.getY(), VisualizationType.Claim, player.getLocation());
 						Visualization.Apply(player, visualization);
+						event.setCancelled(true);
 					}
 				}
 
@@ -1319,6 +1322,7 @@ class PlayerEventHandler implements Listener {
 					GriefPreventionPlus.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapOtherPlayer, claim.getOwnerName());
 					final Visualization visualization = Visualization.FromClaim(claim, clickedBlock.getY(), VisualizationType.ErrorClaim, player.getLocation());
 					Visualization.Apply(player, visualization);
+					event.setCancelled(true);
 				}
 
 				return;
