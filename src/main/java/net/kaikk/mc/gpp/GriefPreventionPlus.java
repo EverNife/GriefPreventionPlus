@@ -113,7 +113,8 @@ public class GriefPreventionPlus extends JavaPlugin {
 		// some stats to the log
 		if (this.config.databaseUrl.length() > 0) {
 			try {
-				final DataStore databaseStore = new DataStore(this.config.databaseUrl, this.config.databaseUserName, this.config.databasePassword);
+				final DataStore databaseStore = new DataStoreMySQL(this.config.databaseUrl, this.config.databaseUserName, this.config.databasePassword);
+				databaseStore.initialize();
 
 				this.setDataStore(databaseStore);
 			} catch (final Exception e) {
