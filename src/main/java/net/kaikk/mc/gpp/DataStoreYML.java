@@ -37,8 +37,6 @@ public class DataStoreYML extends DataStore{
 
     public Map<Integer, FileConfiguration> claimsCfgFiles = new HashMap<>();
 
-    private FCConfig gpp_permsplayer;
-    private FCConfig gpp_permsbukkit;
     private FCConfig gpp_playerdata;
     private FCConfig gpp_groupdata;
     private HashMap<Integer, FCConfig> gpp_claims = new HashMap<>();
@@ -54,8 +52,6 @@ public class DataStoreYML extends DataStore{
         gppDataFolder.mkdirs();
         claimDataFolder.mkdirs();
 
-        gpp_permsplayer     = new FCConfig(new File(gppDataFolder, "gpp_permsplayer.yml"));
-        gpp_permsbukkit     = new FCConfig(new File(gppDataFolder, "gpp_permsbukkit.yml"));
         gpp_playerdata      = new FCConfig(new File(gppDataFolder, "gpp_playerdata.yml"));
         gpp_groupdata       = new FCConfig(new File(gppDataFolder, "gpp_groupdata.yml"));
 
@@ -80,13 +76,13 @@ public class DataStoreYML extends DataStore{
                         final HashMap<String, Integer> permissionMapBukkit = new HashMap<String, Integer>();
                         final HashMap<String, Integer> permissionMapFakePlayer = new HashMap<String, Integer>();
 
-                        for (String player_uuid : gpp_permsplayer.getKeys("GppPermsPlayer." + claim_id)) {
-                            int perm_level = gpp_permsplayer.getInt("GppPermsPlayer." + claim_id + "." + player_uuid);
+                        for (String player_uuid : fcconfig.getKeys("ClaimData.playerPerms")) {
+                            int perm_level = fcconfig.getInt("ClaimData.playerPerms." + player_uuid);
                             permissionMapPlayers.put(UUID.fromString(player_uuid), perm_level);
                         }
 
-                        for (String perm_name : gpp_permsbukkit.getKeys("GppPermsBukkit." + claim_id)) {
-                            int perm_level = gpp_permsbukkit.getInt("GppPermsBukkit." + claim_id + "." + perm_name);
+                        for (String perm_name : fcconfig.getKeys("ClaimData.bukkitPerms")) {
+                            int perm_level = fcconfig.getInt("ClaimData.bukkitPerms." + perm_name);
                             if (perm_name.startsWith("#")) {
                                 permissionMapFakePlayer.put(perm_name.substring(1), perm_level);
                             } else {
@@ -257,8 +253,9 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbSetPerm(Integer claimId, String permString, int perm) {
         try {
-            gpp_permsbukkit.setValue("GppPermsBukkit." + claimId + "." + permString, perm);
-            gpp_permsbukkit.saveAsync();
+            FCConfig config = gpp_claims.get(perm);
+            config.setValue("ClaimData.bukkitPerms." + permString, perm);
+            config.saveAsync();
         } catch (final Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to set perms for claim id " + claimId + " perm [" + permString + "].  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -268,8 +265,9 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbSetPerm(Integer claimId, UUID playerId, int perm) {
         try {
-            gpp_permsplayer.setValue("GppPermsPlayer." + claimId + "." + playerId, perm);
-            gpp_permsplayer.saveAsync();
+            FCConfig config = gpp_claims.get(perm);
+            config.setValue("ClaimData.playerPerms." + playerId, perm);
+            config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to set perms for claim id " + claimId + " player {" + playerId.toString() + "}.  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -280,10 +278,10 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(Integer claimId) {
         try {
-            gpp_permsbukkit.setValue("GppPermsBukkit." + claimId, null);
-            gpp_permsbukkit.saveAsync();
-            gpp_permsplayer.setValue("GppPermsPlayer." + claimId, null);
-            gpp_permsplayer.saveAsync();
+            FCConfig config = gpp_claims.get(claimId);
+            config.setValue("ClaimData.playerPerms", null);
+            config.setValue("ClaimData.bukkitPerms", null);
+            config.saveAsync();
         } catch (final Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset perms for claim id " + claimId + ".  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -294,8 +292,9 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(Integer claimId, String permString) {
         try {
-            gpp_permsbukkit.setValue("GppPermsBukkit." + claimId + "." + permString, null);
-            gpp_permsbukkit.saveAsync();
+            FCConfig config = gpp_claims.get(claimId);
+            config.setValue("ClaimData.bukkitPerms." + permString, null);
+            config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset perms for claim id " + claimId + " perm [" + permString + "].  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -306,8 +305,9 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(Integer claimId, UUID playerId) {
         try {
-            gpp_permsplayer.setValue("GppPermsPlayer." + claimId + "." + playerId, null);
-            gpp_permsplayer.saveAsync();
+            FCConfig config = gpp_claims.get(claimId);
+            config.setValue("ClaimData.playerPerms." + playerId, null);
+            config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset perms for claim id " + claimId + " player {" + playerId.toString() + "}.  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -318,17 +318,13 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(UUID playerId) {
         try {
-            boolean anyChange = false;
             for (final Claim claim : GriefPreventionPlus.getInstance().getDataStore().claims.values()) {
                 if (playerId.equals(claim.getOwnerID())) {
-                    gpp_permsbukkit.setValue("GppPermsBukkit." + claim.getID(), null);
-                    gpp_permsplayer.setValue("GppPermsPlayer." + claim.getID(), null);
-                    anyChange = true;
+                    FCConfig config = gpp_claims.get(claim.getID());
+                    config.setValue("ClaimData.playerPerms", null);
+                    config.setValue("ClaimData.bukkitPerms", null);
+                    config.saveAsync();
                 }
-            }
-            if (anyChange){
-                gpp_permsbukkit.saveAsync();
-                gpp_permsplayer.saveAsync();
             }
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset perms for " + playerId.toString() + "'s claims.  Details:");
@@ -340,15 +336,12 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(UUID owner, String permString) {
         try {
-            boolean anyChange = false;
             for (final Claim claim : GriefPreventionPlus.getInstance().getDataStore().claims.values()) {
                 if (owner.equals(claim.getOwnerID())) {
-                    gpp_permsbukkit.setValue("GppPermsBukkit." + claim.getID() + "." + permString, null);
-                    anyChange = true;
+                    FCConfig config = gpp_claims.get(claim.getID());
+                    config.setValue("ClaimData.bukkitPerms." + permString, null);
+                    config.saveAsync();
                 }
-            }
-            if (anyChange){
-                gpp_permsbukkit.saveAsync();
             }
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset [" + permString + "] perms from {" + owner.toString() + "}'s claims.  Details:");
@@ -360,15 +353,12 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(UUID owner, UUID playerId) {
         try {
-            boolean anyChange = false;
             for (final Claim claim : GriefPreventionPlus.getInstance().getDataStore().claims.values()) {
                 if (owner.equals(claim.getOwnerID())) {
-                    gpp_permsplayer.setValue("GppPermsPlayer." + claim.getID() + "." + playerId, null);
-                    anyChange = true;
+                    FCConfig config = gpp_claims.get(claim.getID());
+                    config.setValue("ClaimData.playerPerms." + playerId, null);
+                    config.saveAsync();
                 }
-            }
-            if (anyChange){
-                gpp_permsplayer.saveAsync();
             }
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to unset {" + playerId.toString() + "} perms from {" + owner.toString() + "}'s claims.  Details:");
@@ -415,10 +405,7 @@ public class DataStoreYML extends DataStore{
             }
 
             for (Claim claimToBeDeleted : claimsToBeDeleted) {
-                gpp_permsplayer.setValue("GppPermsPlayer." + claimToBeDeleted.getID(), null);
-                gpp_permsbukkit.setValue("GppPermsBukkit." + claimToBeDeleted.getID(), null);
-
-                FCConfig config = gpp_claims.get(claim.getID());
+                FCConfig config = gpp_claims.get(claimToBeDeleted.getID());
                 config.getTheFile().delete();
                 gpp_claims.remove(claim.getID());
             }
@@ -448,14 +435,16 @@ public class DataStoreYML extends DataStore{
 
     @Override
     void cachePlayersData() {
+        long daysAgo = System.currentTimeMillis() - (60*60*24*30*1000L);
         for (String player_uuid : gpp_playerdata.getKeys("GppPlayerData")) {
             try {
                 final UUID player = UUID.fromString(player_uuid);
                 final int accruedblocks = gpp_playerdata.getInt("GppPlayerData." + player_uuid + ".accruedblocks");
                 final int bonusblocks = gpp_playerdata.getInt("GppPlayerData." + player_uuid + ".bonusblocks");
                 final long lastseen = gpp_playerdata.getLong("GppPlayerData." + player_uuid + ".lastseen");
-
-                this.playersData.put(player, new PlayerData(player, accruedblocks, bonusblocks, lastseen));
+                if (lastseen > daysAgo ){ // cache it only if lastlogin was 30 days before now
+                    this.playersData.put(player, new PlayerData(player, accruedblocks, bonusblocks, lastseen));
+                }
             } catch (Exception e) {
                 GriefPreventionPlus.addLogEntry("Unable to load data from player: " + player_uuid);
                 GriefPreventionPlus.addLogEntry(e.getMessage());
