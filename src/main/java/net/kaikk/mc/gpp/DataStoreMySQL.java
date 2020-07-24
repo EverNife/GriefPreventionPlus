@@ -31,6 +31,7 @@ public class DataStoreMySQL extends DataStore{
     private final String databaseUrl, userName, password;
 
     DataStoreMySQL(String url, String userName, String password){
+        super();
         this.databaseUrl = url;
         this.userName = userName;
         this.password = password;

@@ -165,6 +165,7 @@ public class Config {
 	String databaseUrl;
 	String databaseUserName;
 	String databasePassword;
+	boolean useLocalYMLInstead;
 
 	public List<String> disabledWorlds;
 	public List<String> claimRequiredWorlds;
@@ -308,8 +309,9 @@ public class Config {
 		this.databaseUrl = config.getString("GriefPrevention.Database.URL", "");
 		this.databaseUserName = config.getString("GriefPrevention.Database.UserName", "");
 		this.databasePassword = config.getString("GriefPrevention.Database.Password", "");
-		
-		
+		this.useLocalYMLInstead = config.getBoolean("GriefPrevention.Database.useLocalYMLInstead", true);
+
+
 		// entry trust
 		this.entryTrustAllowByDefault = config.getBoolean("GriefPreventionPlus.EntryTrustAllowByDefault", true);
 
@@ -366,6 +368,7 @@ public class Config {
 		outConfig.set("GriefPrevention.Database.URL", this.databaseUrl);
 		outConfig.set("GriefPrevention.Database.UserName", this.databaseUserName);
 		outConfig.set("GriefPrevention.Database.Password", this.databasePassword);
+		outConfig.set("GriefPrevention.Database.useLocalYMLInstead", this.useLocalYMLInstead);
 
 		outConfig.set("GriefPrevention.Mods.BlockIdsRequiringAccessTrust", this.mods_accessTrustIds);
 		outConfig.set("GriefPrevention.Mods.BlockIdsRequiringContainerTrust", this.mods_containerTrustIds);

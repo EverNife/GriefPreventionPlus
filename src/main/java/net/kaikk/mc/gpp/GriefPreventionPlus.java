@@ -111,12 +111,17 @@ public class GriefPreventionPlus extends JavaPlugin {
 
 		// when datastore initializes, it loads player and claim data, and posts
 		// some stats to the log
-		if (this.config.databaseUrl.length() > 0) {
+		if (this.config.databaseUrl.length() > 0 || this.config.useLocalYMLInstead) {
 			try {
-				final DataStore databaseStore = new DataStoreMySQL(this.config.databaseUrl, this.config.databaseUserName, this.config.databasePassword);
+				final DataStore databaseStore;
+				if (this.config.useLocalYMLInstead){
+					databaseStore = new DataStoreYML();
+				}else {
+					databaseStore = new DataStoreMySQL(this.config.databaseUrl, this.config.databaseUserName, this.config.databasePassword);
+				}
 				databaseStore.initialize();
-
 				this.setDataStore(databaseStore);
+				addLogEntry("Using " + databaseStore.getClass().getSimpleName());
 			} catch (final Exception e) {
 				addLogEntry(e.getMessage());
 				e.printStackTrace();

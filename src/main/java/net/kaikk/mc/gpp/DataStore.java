@@ -73,9 +73,7 @@ public abstract class DataStore {
 	}
 
 	// initialization!
-	void initialize() throws Exception {
-
-	}
+	abstract void initialize() throws Exception;
 	
 	/** grants a group (players with a specific permission) bonus claim blocks as
 	    long as they're still members of the group */
