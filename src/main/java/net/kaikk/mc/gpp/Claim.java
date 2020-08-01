@@ -709,6 +709,10 @@ public class Claim {
 		return this.permissionMapPlayers;
 	}
 
+	public HashMap<String, Integer> getPermissionMapFakePlayers() {
+		return this.permissionMapFakePlayer;
+	}
+
 	/**
 	 * gets ALL permissions useful for listing all permissions in a claim
 	 */

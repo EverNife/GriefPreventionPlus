@@ -1,7 +1,7 @@
 name: GriefPreventionPlus
 main: net.kaikk.mc.gpp.GriefPreventionPlus
 version: 13.4
-author: KaiNoMood
+author: [KaiNoMood, EverNife]
 softdepend: [Vault, Multiverse-Core, My Worlds, MystCraft, Transporter, TheUnderground, WorldGuard, WorldEdit]
 loadbefore: [TheUnderground, GriefPrevention]
 commands:
@@ -188,6 +188,10 @@ commands:
    amountofclaims:
       description: Shows the amount of claims, optionally in the specified world
       usage: /AmountOfClaims [WorldName]
+   gpp:
+     description: Main command
+     usage: /gpp <subComand>
+     permission: griefprevention.gpp
 permissions:
     griefprevention.createclaims:
         description: Grants permission to create claims.

@@ -56,6 +56,7 @@ public class FCConfig {
 	 * @param  value The Value for that Path
 	 */
 	public void setValue(String path, Object value) {
+		if (path == null) throw new RuntimeException("Path is null my friend! Why?");
 		if (value == null) {
 			this.store(path, value);
 			this.store(path + "_extra", null);

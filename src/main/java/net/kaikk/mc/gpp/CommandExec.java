@@ -19,7 +19,10 @@
 
 package net.kaikk.mc.gpp;
 
+import java.io.File;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -1289,9 +1292,91 @@ public class CommandExec implements CommandExecutor {
 
 			return true;
 		}
+		// convertdatabase
+		else if (cmd.getName().equalsIgnoreCase("gpp") && (sender.hasPermission("griefprevention.gpp"))) {
+			if (args.length == 0 || !args[0].equalsIgnoreCase("convertdatabase")){
+				sender.sendMessage( "§a/" + commandLabel + " convertdatabase");
+				return true;
+			}
 
+			if ( !(GriefPreventionPlus.getInstance().getDataStore() instanceof DataStoreMySQL)){
+				sender.sendMessage("You can only convert from MySQL to YML!");
+				return true;
+			}
+
+			if (args.length < 2 || !args[1].equalsIgnoreCase("--confirm")){
+				sender.sendMessage( "To confirm this operation, use §a/" + commandLabel + " convertdatabase --confirm");
+				return true;
+			}
+
+			if (exporting){
+				sender.sendMessage("§cAlready exporting, please wait!");
+				return true;
+			}
+
+			exporting = true;
+			new Thread(){
+				@Override
+				public void run() {
+					try {
+						DataStoreMySQL dataStoreMySQL = (DataStoreMySQL) GriefPreventionPlus.getInstance().getDataStore();
+
+						sender.sendMessage("§7Loading entire PlayerData from MYSQL");
+						List<PlayerData> playerDataList = dataStoreMySQL.getEntirePlayerDataFromDatabase();
+
+						sender.sendMessage("§7Creating DataStoreYML...");
+						File gppDataFolder = new File(new File(DataStore.configFilePath).getParent(), "DataStorageYML");
+						gppDataFolder.delete();
+						DataStoreYML dataStorYML = new DataStoreYML();
+
+						sender.sendMessage("§7Converting PlayerDatas...");
+						for (PlayerData playerData : playerDataList) {
+							try {
+								dataStorYML.asyncSavePlayerData(playerData.playerID, playerData);
+								sender.sendMessage("PlayerData [" + playerData.playerID + "] was converted.");
+							}catch (Exception e){
+								sender.sendMessage("Failed to add PlayerData [" + playerData.playerID + "]");
+								e.printStackTrace();
+							}
+						}
+
+						sender.sendMessage("§7Converting Claims...");
+						for (Claim claim : dataStoreMySQL.claims.values()) {
+							try {
+								dataStorYML.dbNewClaimWithID(claim);
+								int perms = 0;
+								for (Map.Entry<UUID, Integer> uuidIntegerEntry : claim.getPermissionMapPlayers().entrySet()) {
+									dataStorYML.dbSetPerm(claim.getID(), uuidIntegerEntry.getKey(), uuidIntegerEntry.getValue());
+									perms++;
+								}
+								for (Map.Entry<String, Integer> stringIntegerEntry : claim.getPermissionMapBukkit().entrySet()) {
+									dataStorYML.dbSetPerm(claim.getID(), stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
+									perms++;
+								}
+								for (Map.Entry<String, Integer> stringIntegerEntry : claim.getPermissionMapFakePlayers().entrySet()) {
+									dataStorYML.dbSetPerm(claim.getID(), "#" + stringIntegerEntry.getKey(), stringIntegerEntry.getValue());
+									perms++;
+								}
+								sender.sendMessage("Claim [" + claim.getID() + "] was converted with " + perms + " trusts.");
+							}catch (Exception e){
+								sender.sendMessage("Failed to add claim [" + claim.getID() + "] from" + claim.getOwnerName());
+								e.printStackTrace();
+							}
+						}
+
+						sender.sendMessage("§aConversion Done!");
+					}catch (Exception e){
+						sender.sendMessage("Failed to create the DataStoreYML");
+						e.printStackTrace();
+					}
+					exporting = false;
+				}
+			}.start();
+		}
 		return false;
 	}
+
+	boolean exporting = false;
 	
 	boolean abandonClaimHandler(Player player, boolean deleteTopLevelClaim) {
 		return abandonClaimHandler(player, deleteTopLevelClaim, -1);

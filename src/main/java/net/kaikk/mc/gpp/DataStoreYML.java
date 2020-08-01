@@ -25,6 +25,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
@@ -37,12 +38,13 @@ public class DataStoreYML extends DataStore{
 
     public Map<Integer, FileConfiguration> claimsCfgFiles = new HashMap<>();
 
-    private FCConfig gpp_playerdata;
     private FCConfig gpp_groupdata;
     private HashMap<Integer, FCConfig> gpp_claims = new HashMap<>();
+    private HashMap<UUID, FCConfig> gpp_playerdata = new HashMap<>();
 
     private final File gppDataFolder = new File(new File(DataStore.configFilePath).getParent(), "DataStorageYML");
     private final File claimDataFolder = new File(gppDataFolder, "claims");
+    private final File playersDataFolder = new File(gppDataFolder, "players");
 
 
     // initialization!
@@ -52,8 +54,25 @@ public class DataStoreYML extends DataStore{
         gppDataFolder.mkdirs();
         claimDataFolder.mkdirs();
 
-        gpp_playerdata      = new FCConfig(new File(gppDataFolder, "gpp_playerdata.yml"));
-        gpp_groupdata       = new FCConfig(new File(gppDataFolder, "gpp_groupdata.yml"));
+        gpp_groupdata = new FCConfig(new File(gppDataFolder, "gpp_groupdata.yml"));
+
+        if (playersDataFolder.listFiles() != null){
+            for (File file : playersDataFolder.listFiles()) {
+                if (file.getName().endsWith(".yml")){
+                    try {
+                        UUID player_uuid = UUID.fromString(file.getName().substring(0, file.getName().length() - 4));
+                        final FCConfig fcconfig = new FCConfig(file);
+                        gpp_playerdata.put(player_uuid, fcconfig);
+                    }catch (Exception e){
+                        GriefPreventionPlus.addLogEntry("-- WARNING  --");
+                        GriefPreventionPlus.addLogEntry("I cant read the PlayerData info from " + file.getPath());
+                        e.printStackTrace();
+                        GriefPreventionPlus.addLogEntry("--------------");
+                    }
+
+                }
+            }
+        }
 
         if (claimDataFolder.listFiles() != null){
             for (File file : claimDataFolder.listFiles()) {
@@ -148,10 +167,19 @@ public class DataStoreYML extends DataStore{
         }
 
         try {
-            gpp_playerdata.setValue("GppPlayerData." + playerData.playerID + ".accruedblocks", playerData.getAccruedClaimBlocks());
-            gpp_playerdata.setValue("GppPlayerData." + playerData.playerID + ".bonusblocks", playerData.getBonusClaimBlocks());
-            gpp_playerdata.setValue("GppPlayerData." + playerData.playerID + ".lastseen", playerData.lastSeen);
-            gpp_playerdata.saveAsync();
+            FCConfig config = gpp_playerdata.get(playerID);
+            if (config == null){
+                File file = new File(playersDataFolder, playerID.toString() + ".yml");
+                if (file.exists()){
+                    throw new FileAlreadyExistsException(file.getPath());
+                }
+                config = new FCConfig(file);
+                gpp_playerdata.put(playerID, config);
+            }
+            config.setValue("GppPlayerData.accruedblocks", playerData.getAccruedClaimBlocks());
+            config.setValue("GppPlayerData.bonusblocks", playerData.getBonusClaimBlocks());
+            config.setValue("GppPlayerData.lastseen", playerData.lastSeen);
+            config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to save data for player " + playerID.toString() + ".  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -229,7 +257,32 @@ public class DataStoreYML extends DataStore{
 
             File newClaimFile = new File(claimDataFolder, claim.id + ".yml");
             if (newClaimFile.exists()){
-                throw new RuntimeException("There is no claim for id " + lastestID + ", but there is already a file there! (" + newClaimFile.getPath() + ")");
+                throw new RuntimeException("There is no claim for id " + claim.id + ", but there is already a file there! (" + newClaimFile.getPath() + ")");
+            }
+
+            FCConfig config = new FCConfig(newClaimFile);
+            config.setValue("ClaimData.owner", claim.getOwnerID());
+            config.setValue("ClaimData.world", claim.getWorldUID());
+            config.setValue("ClaimData.lesserX", claim.lesserX);
+            config.setValue("ClaimData.lesserZ", claim.lesserZ);
+            config.setValue("ClaimData.greaterX", claim.greaterX);
+            config.setValue("ClaimData.greaterZ", claim.greaterZ);
+            config.setValue("ClaimData.parentid", claim.getParent() == null ? -1 : claim.getParent().getID());
+            config.setValue("ClaimData.creation", claim.getCreationDate());
+            config.saveAsync();
+
+            gpp_claims.put(claim.id, config);
+        } catch (final Exception e) {
+            GriefPreventionPlus.addLogEntry("Unable to insert data for new claim at " + claim.locationToString() + ".  Details:");
+            GriefPreventionPlus.addLogEntry(e.getMessage());
+        }
+    }
+
+    void dbNewClaimWithID(Claim claim) {
+        try {
+            File newClaimFile = new File(claimDataFolder, claim.id + ".yml");
+            if (newClaimFile.exists()){
+                throw new RuntimeException("There is no claim for id " + claim.id + ", but there is already a file there! (" + newClaimFile.getPath() + ")");
             }
 
             FCConfig config = new FCConfig(newClaimFile);
@@ -253,7 +306,7 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbSetPerm(Integer claimId, String permString, int perm) {
         try {
-            FCConfig config = gpp_claims.get(perm);
+            FCConfig config = gpp_claims.get(claimId);
             config.setValue("ClaimData.bukkitPerms." + permString, perm);
             config.saveAsync();
         } catch (final Exception e) {
@@ -265,7 +318,7 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbSetPerm(Integer claimId, UUID playerId, int perm) {
         try {
-            FCConfig config = gpp_claims.get(perm);
+            FCConfig config = gpp_claims.get(claimId);
             config.setValue("ClaimData.playerPerms." + playerId, perm);
             config.saveAsync();
         } catch (Exception e) {
@@ -418,13 +471,12 @@ public class DataStoreYML extends DataStore{
 
     @Override
     PlayerData getPlayerDataFromStorage(UUID playerID) {
-        try {
-            if (gpp_playerdata.contains("GppPlayerData." + playerID)){
-                final int accruedblocks = gpp_playerdata.getInt("GppPlayerData." + playerID + ".accruedblocks");
-                final int bonusblocks = gpp_playerdata.getInt("GppPlayerData." + playerID + ".bonusblocks");
-                final long lastseen = gpp_playerdata.getLong("GppPlayerData." + playerID + ".lastseen");
-                return new PlayerData(playerID, accruedblocks, bonusblocks, lastseen);
+        try {//On MYSQL this is needed because eventual non commited changes, here we can use the cached version of PlayerData...
+            FCConfig config = gpp_playerdata.get(playerID);
+            if (config == null){
+                return null;
             }
+            return playersData.get(playerID);
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to retrieve data for player " + playerID.toString() + ".  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -435,18 +487,18 @@ public class DataStoreYML extends DataStore{
 
     @Override
     void cachePlayersData() {
-        long daysAgo = System.currentTimeMillis() - (60*60*24*30*1000L);
-        for (String player_uuid : gpp_playerdata.getKeys("GppPlayerData")) {
+        //long daysAgo = System.currentTimeMillis() - (60*60*24*30*1000L);
+        for (Entry<UUID, FCConfig> uuidfcConfigEntry : gpp_playerdata.entrySet()) {
             try {
-                final UUID player = UUID.fromString(player_uuid);
-                final int accruedblocks = gpp_playerdata.getInt("GppPlayerData." + player_uuid + ".accruedblocks");
-                final int bonusblocks = gpp_playerdata.getInt("GppPlayerData." + player_uuid + ".bonusblocks");
-                final long lastseen = gpp_playerdata.getLong("GppPlayerData." + player_uuid + ".lastseen");
-                if (lastseen > daysAgo ){ // cache it only if lastlogin was 30 days before now
+                final UUID player = uuidfcConfigEntry.getKey();
+                final int accruedblocks = uuidfcConfigEntry.getValue().getInt("GppPlayerData.accruedblocks");
+                final int bonusblocks = uuidfcConfigEntry.getValue().getInt("GppPlayerData.bonusblocks");
+                final long lastseen = uuidfcConfigEntry.getValue().getLong("GppPlayerData.lastseen");
+                //if (lastseen > daysAgo ){ // cache it only if lastlogin was 30 days before now
                     this.playersData.put(player, new PlayerData(player, accruedblocks, bonusblocks, lastseen));
-                }
+                //}
             } catch (Exception e) {
-                GriefPreventionPlus.addLogEntry("Unable to load data from player: " + player_uuid);
+                GriefPreventionPlus.addLogEntry("Unable to load data from player: " + uuidfcConfigEntry.getKey());
                 GriefPreventionPlus.addLogEntry(e.getMessage());
                 e.printStackTrace();
             }

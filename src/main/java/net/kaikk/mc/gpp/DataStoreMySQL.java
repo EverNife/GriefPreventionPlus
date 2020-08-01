@@ -636,6 +636,28 @@ public class DataStoreMySQL extends DataStore{
         }
     }
 
+    List<PlayerData> getEntirePlayerDataFromDatabase() {
+        try {
+            this.refreshDataConnection();
+
+            final Statement statement = this.databaseConnection.createStatement();
+            final ResultSet results = statement.executeQuery("SELECT * FROM gpp_playerdata;");
+
+            // if data for this player exists, use it
+            List<PlayerData> playerDataList = new ArrayList<>();
+            while(results.next()) {
+                UUID uuid = toUUID(results.getBytes(1));
+                playerDataList.add(new PlayerData(uuid, results.getInt(2), results.getInt(3), results.getLong(4)));
+            }
+            return playerDataList;
+        } catch (final SQLException e) {
+            GriefPreventionPlus.addLogEntry("Unable to cache players data. Details:");
+            GriefPreventionPlus.addLogEntry(e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to cache playerdata manito!");
+        }
+    }
+
     void refreshDataConnection() throws SQLException {
         if ((this.databaseConnection == null) || this.databaseConnection.isClosed()) {
             // set username/pass properties
