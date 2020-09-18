@@ -1330,10 +1330,15 @@ public class CommandExec implements CommandExecutor {
 						DataStoreYML dataStorYML = new DataStoreYML();
 
 						sender.sendMessage("§7Converting PlayerDatas...");
+						int max = playerDataList.size();
+						int current = 0;
 						for (PlayerData playerData : playerDataList) {
+							current++;
 							try {
 								dataStorYML.asyncSavePlayerData(playerData.playerID, playerData);
-								sender.sendMessage("PlayerData [" + playerData.playerID + "] was converted.");
+								if (current % 10 == 0){
+									sender.sendMessage("PlayerData conversion [" + current + "/" + max + "] was converted.");
+								}
 							}catch (Exception e){
 								sender.sendMessage("Failed to add PlayerData [" + playerData.playerID + "]");
 								e.printStackTrace();
@@ -1364,7 +1369,12 @@ public class CommandExec implements CommandExecutor {
 							}
 						}
 
-						sender.sendMessage("§aConversion Done!");
+						sender.sendMessage("§aConversion Done! You should restart the Server Now!");
+						sender.sendMessage("");
+						sender.sendMessage("§aDo not forge to change your config file field:");
+						sender.sendMessage("§7§o   -->  §e\"Database.useLocalYMLInstead\" §ato §a§lTRUE\n");
+						sender.sendMessage("");
+
 					}catch (Exception e){
 						sender.sendMessage("Failed to create the DataStoreYML");
 						e.printStackTrace();
