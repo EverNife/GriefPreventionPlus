@@ -179,7 +179,7 @@ public class DataStoreYML extends DataStore{
             config.setValue("GppPlayerData.accruedblocks", playerData.getAccruedClaimBlocks());
             config.setValue("GppPlayerData.bonusblocks", playerData.getBonusClaimBlocks());
             config.setValue("GppPlayerData.lastseen", playerData.lastSeen);
-            config.saveAsync();
+            config.save(); //Teorically, this method was already called Async when it was needed!
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to save data for player " + playerID.toString() + ".  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());

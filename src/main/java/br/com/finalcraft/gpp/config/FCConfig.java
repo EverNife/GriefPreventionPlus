@@ -1,5 +1,6 @@
 package br.com.finalcraft.gpp.config;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FCConfig {
 	
@@ -90,10 +93,10 @@ public class FCConfig {
 	/**
 	 * Saves the Config Object to its File, and ensure its assync state
 	 */
+	ExecutorService scheduler = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setDaemon(true).build());
 	public void saveAsync() {
 		if (Bukkit.getServer().isPrimaryThread()){
-			new Thread(() -> save()).start();
-			return;
+			scheduler.submit(this::save);
 		}else {
 			save();
 		}
