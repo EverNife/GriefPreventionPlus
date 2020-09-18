@@ -307,7 +307,8 @@ public class DataStoreYML extends DataStore{
     void dbSetPerm(Integer claimId, String permString, int perm) {
         try {
             FCConfig config = gpp_claims.get(claimId);
-            config.setValue("ClaimData.bukkitPerms." + permString, perm);
+            int newPerm = config.getInt("ClaimData.bukkitPerms." + permString) | perm; //BitWise OR (simple sum)
+            config.setValue("ClaimData.bukkitPerms." + permString, newPerm);
             config.saveAsync();
         } catch (final Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to set perms for claim id " + claimId + " perm [" + permString + "].  Details:");
@@ -319,7 +320,8 @@ public class DataStoreYML extends DataStore{
     void dbSetPerm(Integer claimId, UUID playerId, int perm) {
         try {
             FCConfig config = gpp_claims.get(claimId);
-            config.setValue("ClaimData.playerPerms." + playerId, perm);
+            int newPerm = config.getInt("ClaimData.playerPerms." + playerId) | perm; //BitWise OR (simple sum)
+            config.setValue("ClaimData.playerPerms." + playerId, newPerm);
             config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to set perms for claim id " + claimId + " player {" + playerId.toString() + "}.  Details:");
