@@ -197,6 +197,9 @@ public class Claim {
 
 		// look for explicit (or public) individual access, inventory, or build
 		// permission
+		if (this.hasExplicitPermission(player, ClaimPermission.MANAGE)) {
+			return null;
+		}
 		if (this.hasExplicitPermission(player, ClaimPermission.BUILD)) {
 			return null;
 		}
@@ -212,6 +215,9 @@ public class Claim {
 
 
 		// also check for public permission
+		if (this.hasPublicPermission(ClaimPermission.MANAGE)) {
+			return null;
+		}
 		if (this.hasPublicPermission(ClaimPermission.BUILD)) {
 			return null;
 		}
@@ -265,6 +271,9 @@ public class Claim {
 		if (this.hasExplicitPermission(player, ClaimPermission.BUILD)) {
 			return null;
 		}
+		if (this.hasExplicitPermission(player, ClaimPermission.MANAGE)) {
+			return null;
+		}
 
 		// also check for public permission
 		if (this.hasPublicPermission(ClaimPermission.ACCESS)) {
@@ -274,6 +283,9 @@ public class Claim {
 			return null;
 		}
 		if (this.hasPublicPermission(ClaimPermission.BUILD)) {
+			return null;
+		}
+		if (this.hasPublicPermission(ClaimPermission.MANAGE)) {
 			return null;
 		}
 
@@ -324,9 +336,17 @@ public class Claim {
 		if (this.hasExplicitPermission(player, ClaimPermission.BUILD)) {
 			return null;
 		}
+		//Managers should be able to build as well :/
+		if (this.hasExplicitPermission(player, ClaimPermission.MANAGE)) {
+			return null;
+		}
 
 		// check for public permission
 		if (this.hasPublicPermission(ClaimPermission.BUILD)) {
+			return null;
+		}
+		//Managers should be able to build as well :/
+		if (this.hasPublicPermission(ClaimPermission.MANAGE)) {
 			return null;
 		}
 
@@ -477,12 +497,18 @@ public class Claim {
 		if (this.hasExplicitPermission(player, ClaimPermission.BUILD)) {
 			return null;
 		}
+		if (this.hasExplicitPermission(player, ClaimPermission.MANAGE)) {
+			return null;
+		}
 
 		// check for public container or build permission
 		if (this.hasPublicPermission(ClaimPermission.CONTAINER)) {
 			return null;
 		}
 		if (this.hasPublicPermission(ClaimPermission.BUILD)) {
+			return null;
+		}
+		if (this.hasPublicPermission(ClaimPermission.MANAGE)) {
 			return null;
 		}
 
