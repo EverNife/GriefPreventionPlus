@@ -22,8 +22,8 @@ package net.kaikk.mc.gpp;
 //lower value = higher permissions
 public enum ClaimPermission {
 	MANAGE(1),		// 0 0 0 0 1
-	BUILD(2),       // 0 0 0 1 0
-	CONTAINER(4),   // 0 0 1 0 0
+	BUILD(2),		// 0 0 0 1 0
+	CONTAINER(4),	// 0 0 1 0 0
 	ACCESS(8),		// 0 1 0 0 0
 	ENTRY(16);		// 1 0 0 0 0
 
