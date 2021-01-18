@@ -1,15 +1,15 @@
 # GriefPreventionPlus
-GriefPreventionPlus offers better performances, data integrity, extension capabilities, it currently supports MC1.7.10 and higher (1.8.9, 1.9.4, and 1.10.2 were tested). 
+GriefPreventionPlus offers better performances, data integrity, extension capabilities, it currently supports MC1.7.10 and higher (1.8.9, 1.9.4, 1.10.2 and 1.12.2 were tested). 
 
 There's a (old) MC1.6.4 version too (thanks to @CappyT and @dedo1911)
 
 Feedback are needed! If you found an issue, please report it!
-Please use the [issues](https://github.com/KaiKikuchi/GriefPreventionPlus/issues) page on Github!
+Please use the [issues](https://github.com/EverNife/GriefPreventionPlus/issues) page on Github!
 
-[DeVcoFTB](http://www.devcoftb.com)'s servers use this plugin.
+[FinalCraft](http://www.finalcraft.com.br)'s servers use this plugin.
 
 ## Download
-All builds for my plugins can be found on my [personal page](http://mc.kaikk.net/), or under [releases](https://github.com/KaiKikuchi/GriefPreventionPlus/releases).
+All builds can be found under [releases](https://github.com/EverNife/GriefPreventionPlus/releases).
 
 ###Installation
 - If you've installed GriefPrevention, remove GriefPrevention jar from plugins folder
@@ -21,6 +21,7 @@ Your GriefPrevention database won't be removed: you can rollback to GriefPrevent
 If you're using GriefPrevention file based storage, read this: https://github.com/KaiKikuchi/GriefPreventionPlus/issues/11
 
 ###Major features
+- Has YMAL DataStorage Support (Uses more RAM, only recommended for servers with more than 3GB)
 - Get GriefPrevention's last updates on your MC 1.7.10 server!
 - MySQL database is a requirement. Removed file based storage.
 - Drastically improved database performances and reduced size: bigger servers will notice it!
