@@ -93,7 +93,7 @@ public class FCConfig {
 	/**
 	 * Saves the Config Object to its File, and ensure its assync state
 	 */
-	ExecutorService scheduler = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setDaemon(true).build());
+	public static ExecutorService scheduler = Executors.newFixedThreadPool(5, new ThreadFactoryBuilder().setNameFormat("assyncsave-pool-%d").setDaemon(true).build());
 	public void saveAsync() {
 		if (Bukkit.getServer().isPrimaryThread()){
 			scheduler.submit(this::save);
