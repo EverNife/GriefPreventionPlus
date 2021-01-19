@@ -102,6 +102,7 @@ public class DataStoreYML extends DataStore{
 
                         for (String perm_name : fcconfig.getKeys("ClaimData.bukkitPerms")) {
                             int perm_level = fcconfig.getInt("ClaimData.bukkitPerms." + perm_name);
+                            perm_name = perm_name.replace("§",".");//Fix cases where the BukkitPerm has dots
                             if (perm_name.startsWith("#")) {
                                 permissionMapFakePlayer.put(perm_name.substring(1), perm_level);
                             } else {
@@ -307,6 +308,7 @@ public class DataStoreYML extends DataStore{
     void dbSetPerm(Integer claimId, String permString, int perm) {
         try {
             FCConfig config = gpp_claims.get(claimId);
+            permString = permString.replace(".","§");//Fix cases where the BukkitPerm has dots
             int newPerm = config.getInt("ClaimData.bukkitPerms." + permString) | perm; //BitWise OR (simple sum)
             config.setValue("ClaimData.bukkitPerms." + permString, newPerm);
             config.saveAsync();
@@ -348,6 +350,7 @@ public class DataStoreYML extends DataStore{
     void dbUnsetPerm(Integer claimId, String permString) {
         try {
             FCConfig config = gpp_claims.get(claimId);
+            permString = permString.replace(".","§");//Fix cases where the BukkitPerm has dots
             config.setValue("ClaimData.bukkitPerms." + permString, null);
             config.saveAsync();
         } catch (Exception e) {
@@ -391,6 +394,7 @@ public class DataStoreYML extends DataStore{
     @Override
     void dbUnsetPerm(UUID owner, String permString) {
         try {
+            permString = permString.replace(".","§");//Fix cases where the BukkitPerm has dots
             for (final Claim claim : GriefPreventionPlus.getInstance().getDataStore().claims.values()) {
                 if (owner.equals(claim.getOwnerID())) {
                     FCConfig config = gpp_claims.get(claim.getID());
