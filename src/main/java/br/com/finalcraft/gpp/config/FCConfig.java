@@ -1,6 +1,7 @@
 package br.com.finalcraft.gpp.config;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import net.kaikk.mc.gpp.GriefPreventionPlus;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -95,11 +96,7 @@ public class FCConfig {
 	 */
 	public static ExecutorService scheduler = Executors.newFixedThreadPool(5, new ThreadFactoryBuilder().setNameFormat("assyncsave-pool-%d").setDaemon(true).build());
 	public void saveAsync() {
-		if (Bukkit.getServer().isPrimaryThread()){
-			scheduler.submit(this::save);
-		}else {
-			save();
-		}
+		scheduler.submit(this::save);
 	}
 
 	/**
@@ -109,19 +106,8 @@ public class FCConfig {
 		try {
 			config.save(theFile);
 		} catch (IOException e) {
-			new RuntimeException(e);
-		}
-	}
-
-	/**
-	 * Saves the Config Object to a File
-	 * 
-	 * @param  file The File you are saving this Config to
-	 */ 
-	public void saveAsync(File file) {
-		try {
-			config.save(file);
-		} catch (IOException e) {
+			GriefPreventionPlus.addLogEntry("Failed to save file [" + theFile.getAbsolutePath() + "]");
+			e.printStackTrace();
 		}
 	}
 

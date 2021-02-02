@@ -28,6 +28,7 @@ import java.io.File;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 //singleton class which manages all GriefPrevention data (except for config options)
@@ -180,7 +181,7 @@ public class DataStoreYML extends DataStore{
             config.setValue("GppPlayerData.accruedblocks", playerData.getAccruedClaimBlocks());
             config.setValue("GppPlayerData.bonusblocks", playerData.getBonusClaimBlocks());
             config.setValue("GppPlayerData.lastseen", playerData.lastSeen);
-            config.save(); //Teorically, this method was already called Async when it was needed!
+            config.saveAsync();
         } catch (Exception e) {
             GriefPreventionPlus.addLogEntry("Unable to save data for player " + playerID.toString() + ".  Details:");
             GriefPreventionPlus.addLogEntry(e.getMessage());
@@ -203,7 +204,7 @@ public class DataStoreYML extends DataStore{
         playerData.getAccruedClaimBlocks();
         playerData.getClaims();
 
-        //TODO Create a way to save MySQL Sync, like, in another world!
+        //No need to save this Sync, close() will ensure this is properly executed!
         this.asyncSavePlayerData(playerID, playerData);
     }
 
@@ -241,6 +242,18 @@ public class DataStoreYML extends DataStore{
 
     @Override
     void close() {
+        if (!FCConfig.scheduler.isShutdown() && !FCConfig.scheduler.isTerminated()){
+            try {
+                FCConfig.scheduler.shutdown();
+                boolean success = FCConfig.scheduler.awaitTermination(30, TimeUnit.SECONDS);
+                if (!success){
+                    GriefPreventionPlus.addLogEntry("Failed to close DataStoreYML, TimeOut of 30 seconds Reached, this is really bad! Terminating all of them now!");
+                    FCConfig.scheduler.shutdownNow();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         //Nothing to close :D
     }
 
