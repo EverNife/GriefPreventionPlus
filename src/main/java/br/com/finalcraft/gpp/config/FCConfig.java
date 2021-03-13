@@ -12,8 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class FCConfig {
 	
@@ -94,20 +94,28 @@ public class FCConfig {
 	/**
 	 * Saves the Config Object to its File, and ensure its assync state
 	 */
-	public static ExecutorService scheduler = Executors.newFixedThreadPool(5, new ThreadFactoryBuilder().setNameFormat("assyncsave-pool-%d").setDaemon(true).build());
+	public static ExecutorService scheduler = new ThreadPoolExecutor(5, 100,
+			1000L, TimeUnit.MILLISECONDS,
+			new LinkedBlockingQueue(),
+			new ThreadFactoryBuilder().setNameFormat("assyncsave-pool-%d").build());
+
 	public void saveAsync() {
 		scheduler.submit(this::save);
 	}
 
+	private final ReentrantLock lock = new ReentrantLock(true);
 	/**
 	 * Saves the Config Object to its File
 	 */
 	public void save() {
+		lock.lock();
 		try {
 			config.save(theFile);
 		} catch (IOException e) {
 			GriefPreventionPlus.addLogEntry("Failed to save file [" + theFile.getAbsolutePath() + "]");
 			e.printStackTrace();
+		}finally {
+			lock.unlock();
 		}
 	}
 
