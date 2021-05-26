@@ -94,10 +94,10 @@ public class FCConfig {
 	/**
 	 * Saves the Config Object to its File, and ensure its assync state
 	 */
-	public static ExecutorService scheduler = new ThreadPoolExecutor(5, 100,
+	public static ExecutorService scheduler = new ThreadPoolExecutor(5, Integer.MAX_VALUE,
 			1000L, TimeUnit.MILLISECONDS,
 			new LinkedBlockingQueue(),
-			new ThreadFactoryBuilder().setNameFormat("assyncsave-pool-%d").build());
+			new ThreadFactoryBuilder().setNameFormat("gpp-assyncsave-pool-%d").build());
 
 	public void saveAsync() {
 		scheduler.submit(this::save);
