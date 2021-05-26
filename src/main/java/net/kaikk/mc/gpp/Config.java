@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -225,7 +226,7 @@ public class Config {
 		this.claims_expirationDays = config.getInt("GriefPrevention.Claims.Expiration.AllClaimDays", 0);
 		this.claims_survivalAutoNatureRestoration = config.getBoolean("GriefPrevention.Claims.Expiration.AutomaticNatureRestoration.SurvivalWorlds", false);
 		this.claims_maxClaimsPerPlayer = config.getInt("GriefPrevention.Claims.MaximumNumberOfClaimsPerPlayer", 0);
-		this.claims_respectWorldGuard = config.getBoolean("GriefPrevention.Claims.CreationRequiresWorldGuardBuildPermission", true);
+		this.claims_respectWorldGuard = Bukkit.getPluginManager().isPluginEnabled("WorldGuard") && config.getBoolean("GriefPrevention.Claims.CreationRequiresWorldGuardBuildPermission", true);
 		this.claims_portalsRequirePermission = config.getBoolean("GriefPrevention.Claims.PortalGenerationRequiresPermission", false);
 		final String accessTrustSlashCommands = config.getString("GriefPrevention.Claims.CommandsRequiringAccessTrust", "/sethome");
 
