@@ -86,7 +86,7 @@ class BlockEventHandler implements Listener {
 	}
 
 	// when a player breaks a block...
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockBreak(BlockBreakEvent breakEvent) {
 		final Player player = breakEvent.getPlayer();
 		final Block block = breakEvent.getBlock();
@@ -135,7 +135,7 @@ class BlockEventHandler implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockFromTo(BlockFromToEvent spreadEvent) {
 		if (spreadEvent == null) {
 			return;
@@ -171,7 +171,7 @@ class BlockEventHandler implements Listener {
 
 	// blocks are ignited ONLY by flint and steel (not by being near lava, open
 	// flames, etc), unless configured otherwise
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockIgnite(BlockIgniteEvent igniteEvent) {
 		// don't track in worlds where claims are not enabled
 		if (!GriefPreventionPlus.getInstance().claimsEnabledForWorld(igniteEvent.getBlock().getWorld())) {
@@ -184,7 +184,7 @@ class BlockEventHandler implements Listener {
 	}
 
 	// blocks "pushing" other players' blocks around (pistons)
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockPistonExtend(BlockPistonExtendEvent event) {
 		// pushing down is ALWAYS safe
 		if (event.getDirection() == BlockFace.DOWN) {
@@ -306,7 +306,7 @@ class BlockEventHandler implements Listener {
 	}
 
 	// blocks theft by pulling blocks out of a claim (again pistons)
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onBlockPistonRetract(BlockPistonRetractEvent event) {
 		// if MC1.8, EventHandler18 will handle this
 		if (GriefPreventionPlus.isBukkit18) {
@@ -376,7 +376,7 @@ class BlockEventHandler implements Listener {
 	}
 
 	// when a player places a block...
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent placeEvent) {
 		final Player player = placeEvent.getPlayer();		
 		final Block block = placeEvent.getBlock();
@@ -534,7 +534,7 @@ class BlockEventHandler implements Listener {
 	}
 
 	// when a player places multiple blocks...
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onBlocksPlace(BlockMultiPlaceEvent placeEvent) {
 		final Player player = placeEvent.getPlayer();
 
@@ -593,7 +593,7 @@ class BlockEventHandler implements Listener {
 
 	// ensures dispensers can't be used to dispense a block(like water or lava)
 	// or item across a claim boundary
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void onDispense(BlockDispenseEvent dispenseEvent) {
 		// don't track in worlds where claims are not enabled
 		if (!GriefPreventionPlus.getInstance().claimsEnabledForWorld(dispenseEvent.getBlock().getWorld())) {
