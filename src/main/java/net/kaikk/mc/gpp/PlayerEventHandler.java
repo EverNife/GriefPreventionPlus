@@ -1483,7 +1483,7 @@ class PlayerEventHandler implements Listener {
 			// FEATURE: when players get trapped in a nether portal, send them
 			// back through to the other side
 			final CheckForPortalTrapTask task = new CheckForPortalTrapTask(player, event.getFrom());
-			GriefPreventionPlus.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(GriefPreventionPlus.getInstance(), task, 100L);
+			GriefPreventionPlus.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(GriefPreventionPlus.getInstance(), task, 600L);
 
 			// FEATURE: if the player teleporting doesn't have permission to
 			// build a nether portal and none already exists at the destination,
