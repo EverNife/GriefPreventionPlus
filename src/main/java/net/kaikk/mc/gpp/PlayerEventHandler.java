@@ -21,7 +21,7 @@ package net.kaikk.mc.gpp;
 
 import net.kaikk.mc.gpp.events.ClaimEnterEvent;
 import net.kaikk.mc.gpp.events.ClaimExitEvent;
-import net.kaikk.mc.gpp.events.ClaimFirstCornerSetEvent;
+import net.kaikk.mc.gpp.events.ClaimCreationCornerSetEvent;
 import net.kaikk.mc.gpp.events.ClaimFromToEvent;
 import net.kaikk.mc.gpp.visualization.Visualization;
 import net.kaikk.mc.gpp.visualization.VisualizationType;
@@ -1314,9 +1314,9 @@ class PlayerEventHandler implements Listener {
 					return;
 				}
 
-				ClaimFirstCornerSetEvent firstCornerEvent = new ClaimFirstCornerSetEvent(player, clickedBlock.getLocation());
-				Bukkit.getPluginManager().callEvent(firstCornerEvent);
-				if (firstCornerEvent.isCancelled()){
+				ClaimCreationCornerSetEvent cornerSetEvent = new ClaimCreationCornerSetEvent(player, clickedBlock.getLocation(), true);
+				Bukkit.getPluginManager().callEvent(cornerSetEvent);
+				if (cornerSetEvent.isCancelled()){
 					return;
 				}
 
@@ -1337,6 +1337,12 @@ class PlayerEventHandler implements Listener {
 				if (!lastShovelLocation.getWorld().equals(clickedBlock.getWorld())) {
 					playerData.lastShovelLocation = null;
 					this.onPlayerInteract(event);
+					return;
+				}
+
+				ClaimCreationCornerSetEvent cornerSetEvent = new ClaimCreationCornerSetEvent(player, clickedBlock.getLocation(), false);
+				Bukkit.getPluginManager().callEvent(cornerSetEvent);
+				if (cornerSetEvent.isCancelled()){
 					return;
 				}
 
