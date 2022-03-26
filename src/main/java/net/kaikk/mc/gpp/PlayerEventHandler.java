@@ -1314,7 +1314,7 @@ class PlayerEventHandler implements Listener {
 					return;
 				}
 
-				ClaimFirstCornerSetEvent firstCornerEvent = new ClaimFirstCornerSetEvent(player);
+				ClaimFirstCornerSetEvent firstCornerEvent = new ClaimFirstCornerSetEvent(player, clickedBlock.getLocation());
 				Bukkit.getPluginManager().callEvent(firstCornerEvent);
 				if (firstCornerEvent.isCancelled()){
 					return;
