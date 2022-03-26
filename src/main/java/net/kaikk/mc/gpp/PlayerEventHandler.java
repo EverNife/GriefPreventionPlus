@@ -19,64 +19,31 @@
 
 package net.kaikk.mc.gpp;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.regex.Pattern;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.TravelAgent;
+import net.kaikk.mc.gpp.events.ClaimEnterEvent;
+import net.kaikk.mc.gpp.events.ClaimExitEvent;
+import net.kaikk.mc.gpp.events.ClaimFirstCornerSetEvent;
+import net.kaikk.mc.gpp.events.ClaimFromToEvent;
+import net.kaikk.mc.gpp.visualization.Visualization;
+import net.kaikk.mc.gpp.visualization.VisualizationType;
+import org.bukkit.*;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Hanging;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Tameable;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.BlockIterator;
 
-import net.kaikk.mc.gpp.events.ClaimEnterEvent;
-import net.kaikk.mc.gpp.events.ClaimExitEvent;
-import net.kaikk.mc.gpp.events.ClaimFromToEvent;
-import net.kaikk.mc.gpp.visualization.Visualization;
-import net.kaikk.mc.gpp.visualization.VisualizationType;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("deprecation")
 class PlayerEventHandler implements Listener {
@@ -1344,6 +1311,12 @@ class PlayerEventHandler implements Listener {
 				// doesn't have permission to bypass, display an error message
 				if ((GriefPreventionPlus.getInstance().config.claims_maxClaimsPerPlayer > 0) && !player.hasPermission("griefprevention.overrideclaimcountlimit") && (playerData.getClaims().size() >= GriefPreventionPlus.getInstance().config.claims_maxClaimsPerPlayer)) {
 					GriefPreventionPlus.sendMessage(player, TextMode.Err, Messages.ClaimCreationFailedOverClaimCountLimit);
+					return;
+				}
+
+				ClaimFirstCornerSetEvent firstCornerEvent = new ClaimFirstCornerSetEvent(player);
+				Bukkit.getPluginManager().callEvent(firstCornerEvent);
+				if (firstCornerEvent.isCancelled()){
 					return;
 				}
 
