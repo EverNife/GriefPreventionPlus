@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.kaikk.mc.gpp.events.PreAbandonAllClaimsEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -309,6 +310,16 @@ public class CommandExec implements CommandExecutor {
 			// check count
 			if (originalClaimCount == 0) {
 				GriefPreventionPlus.sendMessage(player, TextMode.Err, Messages.YouHaveNoClaims);
+				return true;
+			}
+
+			PreAbandonAllClaimsEvent event = new PreAbandonAllClaimsEvent(
+					playerData.getClaims(),
+					player
+			);
+
+			GriefPreventionPlus.getInstance().getServer().getPluginManager().callEvent(event);
+			if (event.isCancelled()) {
 				return true;
 			}
 
