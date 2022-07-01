@@ -43,4 +43,8 @@ public class PreAbandonAllClaimsEvent extends Event implements Cancellable {
 	public HandlerList getHandlers() {
 		return handlerList;
 	}
+
+	public static HandlerList getHandlerList() {
+		return handlerList;
+	}
 }
