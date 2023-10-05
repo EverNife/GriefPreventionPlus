@@ -320,7 +320,7 @@ public class Config {
 		this.entryTrustAllowByDefault = config.getBoolean("GriefPreventionPlus.EntryTrustAllowByDefault", true);
 
 		this.portalTrapSystemEnabled = config.getBoolean("GriefPreventionPlus.PortalTrapSystem.enabled", true);
-		this.portalTrapSystemDelaySeconds = config.getInt("GriefPreventionPlus.PortalTrapSystem.delaySeconds", 5);
+		this.portalTrapSystemDelaySeconds = config.getInt("GriefPreventionPlus.PortalTrapSystem.delaySeconds", 30);
 
 		outConfig.set("GriefPrevention.Claims.PreventTheft", this.claims_preventTheft);
 		outConfig.set("GriefPrevention.Claims.ProtectCreatures", this.claims_protectCreatures);
