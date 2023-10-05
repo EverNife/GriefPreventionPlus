@@ -171,6 +171,9 @@ public class Config {
 	public List<String> disabledWorlds;
 	public List<String> claimRequiredWorlds;
 	public List<String> creativeRulesWorlds;
+
+	public Boolean portalTrapSystemEnabled = true;
+	public Integer portalTrapSystemDelaySeconds = 30;
 	
 	Config() {
 		// load the config if it exists
@@ -316,6 +319,9 @@ public class Config {
 		// entry trust
 		this.entryTrustAllowByDefault = config.getBoolean("GriefPreventionPlus.EntryTrustAllowByDefault", true);
 
+		this.portalTrapSystemEnabled = config.getBoolean("GriefPreventionPlus.PortalTrapSystem.enabled", true);
+		this.portalTrapSystemDelaySeconds = config.getInt("GriefPreventionPlus.PortalTrapSystem.delaySeconds", 5);
+
 		outConfig.set("GriefPrevention.Claims.PreventTheft", this.claims_preventTheft);
 		outConfig.set("GriefPrevention.Claims.ProtectCreatures", this.claims_protectCreatures);
 		outConfig.set("GriefPrevention.Claims.PreventButtonsSwitches", this.claims_preventButtonsSwitches);
@@ -380,6 +386,9 @@ public class Config {
 		outConfig.set("GriefPrevention.Mods.BlockIdsExplodable", explodableStrings);
 		
 		outConfig.set("GriefPreventionPlus.EntryTrustAllowByDefault", this.entryTrustAllowByDefault);
+		outConfig.set("GriefPreventionPlus.PortalTrapSystem.enabled", this.portalTrapSystemEnabled);
+		outConfig.set("GriefPreventionPlus.PortalTrapSystem.delaySeconds", this.portalTrapSystemDelaySeconds);
+
 
 		try {
 			outConfig.save(DataStore.configFilePath);
