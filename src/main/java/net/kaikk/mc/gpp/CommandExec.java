@@ -148,7 +148,7 @@ public class CommandExec implements CommandExecutor {
 				return false;
 			}
 			
-			if (args.length>1 && !player.hasPermission("griefprevention.tpclaim.others")) {
+			if (args.length>1 && !player.hasPermission("griefprevention.tpclaim")) {
 				GriefPreventionPlus.sendMessage(player, TextMode.Err, Messages.NoPermissionForCommand);
 				return false;
 			}
@@ -157,6 +157,11 @@ public class CommandExec implements CommandExecutor {
 				Claim claim = GriefPreventionPlus.getInstance().getDataStore().getClaim(Integer.valueOf(args[0]));
 				if (claim==null) {
 					GriefPreventionPlus.sendMessage(player, TextMode.Err, "Claim not found");
+					return false;
+				}
+
+				if (!claim.getOwnerID().equals(player.getUniqueId()) && !player.hasPermission("griefprevention.tpclaim.others")){
+					GriefPreventionPlus.sendMessage(player, TextMode.Err, "No permisstion to TP on others claims.");
 					return false;
 				}
 				
