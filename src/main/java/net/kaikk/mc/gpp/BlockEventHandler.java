@@ -22,6 +22,7 @@ package net.kaikk.mc.gpp;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.kaikk.mc.gpp.integration.EverNifeCoreIntegration;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;
@@ -381,6 +382,10 @@ class BlockEventHandler implements Listener {
 		final Player player = placeEvent.getPlayer();		
 		final Block block = placeEvent.getBlock();
 
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player)){
+			return;
+		}
+
 		// FEATURE: limit fire placement, to prevent PvP-by-fire
 
 		// if placed block is fire and pvp is off, apply rules for proximity to
@@ -537,6 +542,10 @@ class BlockEventHandler implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlocksPlace(BlockMultiPlaceEvent placeEvent) {
 		final Player player = placeEvent.getPlayer();
+
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player)){
+			return;
+		}
 
 		// don't track in worlds where claims are not enabled
 		if (!GriefPreventionPlus.getInstance().claimsEnabledForWorld(placeEvent.getBlock().getWorld())) {

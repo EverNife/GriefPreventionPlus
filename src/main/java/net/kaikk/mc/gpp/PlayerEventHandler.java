@@ -23,6 +23,7 @@ import net.kaikk.mc.gpp.events.ClaimEnterEvent;
 import net.kaikk.mc.gpp.events.ClaimExitEvent;
 import net.kaikk.mc.gpp.events.ClaimCreationCornerSetEvent;
 import net.kaikk.mc.gpp.events.ClaimFromToEvent;
+import net.kaikk.mc.gpp.integration.EverNifeCoreIntegration;
 import net.kaikk.mc.gpp.visualization.Visualization;
 import net.kaikk.mc.gpp.visualization.VisualizationType;
 import org.bukkit.*;
@@ -177,6 +178,10 @@ class PlayerEventHandler implements Listener {
 		final Player player = event.getPlayer();
 		final Entity entity = event.getRightClicked();
 
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player)){
+			return;
+		}
+
 		if (!GriefPreventionPlus.getInstance().claimsEnabledForWorld(entity.getWorld())) {
 			return;
 		}
@@ -305,6 +310,11 @@ class PlayerEventHandler implements Listener {
 	// this event is fired when a player enters another claim/subdivision
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.HIGH)
 	void onPlayerMove(PlayerMoveEvent event) {
+
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(event.getPlayer())){
+			return;
+		}
+
 		if (!this.updateLastMovementClaim(event.getPlayer(), event.getFrom(), event.getTo())) {
 			final Location invertedLocation = this.invertedLocation(event.getFrom(), event.getTo());
 			final Claim claim = this.dataStore.getClaimAt(invertedLocation, false);
@@ -323,6 +333,9 @@ class PlayerEventHandler implements Listener {
 	// when a player teleports
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(event.getPlayer())){
+			return;
+		}
 		event.setCancelled(!this.updateLastMovementClaim(event.getPlayer(), event.getFrom(), event.getTo()));
 	}
 
@@ -510,6 +523,11 @@ class PlayerEventHandler implements Listener {
 		final Action action = event.getAction();
 
 		final Player player = event.getPlayer();
+
+		if (GriefPreventionPlus.getInstance().config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player)){
+			return;
+		}
+
 		Block clickedBlock = event.getClickedBlock(); // null returned here
 		// means interacting
 		// with air
