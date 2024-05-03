@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import net.kaikk.mc.gpp.integration.EverNifeCoreIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -247,7 +248,7 @@ public class GriefPreventionPlus extends JavaPlugin {
 
 		// exception: administrators in ignore claims mode, and special player
 		// accounts created by server mods
-		if (playerData.ignoreClaims || this.config.mods_ignoreClaimsAccounts.contains(player.getName())) {
+		if (playerData.ignoreClaims || this.config.mods_ignoreClaimsAccounts.contains(player.getName()) || (this.config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player))  ) {
 			return null;
 		}
 
@@ -283,7 +284,7 @@ public class GriefPreventionPlus extends JavaPlugin {
 
 		// exception: administrators in ignore claims mode and special player
 		// accounts created by server mods
-		if (playerData.ignoreClaims || this.config.mods_ignoreClaimsAccounts.contains(player.getName())) {
+		if (playerData.ignoreClaims || this.config.mods_ignoreClaimsAccounts.contains(player.getName()) || (this.config.mods_ignoreAllFakePlayers && EverNifeCoreIntegration.isFakePlayer(player))) {
 			return null;
 		}
 

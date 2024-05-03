@@ -142,6 +142,8 @@ public class Config {
 	// /containertrust for
 	// player interaction
 	public List<String> mods_ignoreClaimsAccounts; // list of player names which
+	// player interaction
+	public boolean mods_ignoreAllFakePlayers; // ignore all fakeplayers
 	// ALWAYS ignore claims
 	public MaterialCollection mods_explodableIds; // list of block IDs which can
 	// be destroyed by
@@ -252,6 +254,7 @@ public class Config {
 		this.zombiesBreakDoors = config.getBoolean("GriefPrevention.HardModeZombiesBreakDoors", false);
 
 		this.mods_ignoreClaimsAccounts = config.getStringList("GriefPrevention.Mods.PlayersIgnoringAllClaims");
+		this.mods_ignoreAllFakePlayers = config.getBoolean("GriefPrevention.Mods.IgnoreAllFakePlayers", false);
 
 		if (this.mods_ignoreClaimsAccounts == null) {
 			this.mods_ignoreClaimsAccounts = new ArrayList<String>();
@@ -381,6 +384,7 @@ public class Config {
 		outConfig.set("GriefPrevention.Mods.BlockIdsRequiringContainerTrust", this.mods_containerTrustIds);
 		outConfig.set("GriefPrevention.Mods.BlockIdsExplodable", this.mods_explodableIds);
 		outConfig.set("GriefPrevention.Mods.PlayersIgnoringAllClaims", this.mods_ignoreClaimsAccounts);
+		outConfig.set("GriefPrevention.Mods.IgnoreAllFakePlayers", this.mods_ignoreAllFakePlayers);
 		outConfig.set("GriefPrevention.Mods.BlockIdsRequiringAccessTrust", accessTrustStrings);
 		outConfig.set("GriefPrevention.Mods.BlockIdsRequiringContainerTrust", containerTrustStrings);
 		outConfig.set("GriefPrevention.Mods.BlockIdsExplodable", explodableStrings);
