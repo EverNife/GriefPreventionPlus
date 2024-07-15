@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import br.com.finalcraft.gpp.config.FCConfig;
 import net.kaikk.mc.gpp.integration.EverNifeCoreIntegration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -116,7 +117,9 @@ public class GriefPreventionPlus extends JavaPlugin {
 			try {
 				final DataStore databaseStore;
 				if (this.config.useLocalYMLInstead){
-					if (EverNifeCoreIntegration.isPresent() == false){
+					try {
+						FCConfig.class.toString();
+					}catch (Throwable ignored){
 						throw new IllegalStateException("To useLocalYMLInstead you need EverNifeCore 2.0.4 present because of YML performance storaged.");
 					}
 					databaseStore = new DataStoreYML();
