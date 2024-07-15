@@ -116,6 +116,9 @@ public class GriefPreventionPlus extends JavaPlugin {
 			try {
 				final DataStore databaseStore;
 				if (this.config.useLocalYMLInstead){
+					if (EverNifeCoreIntegration.isPresent() == false){
+						throw new IllegalStateException("To useLocalYMLInstead you need EverNifeCore 2.0.4 present because of YML performance storaged.");
+					}
 					databaseStore = new DataStoreYML();
 				}else {
 					databaseStore = new DataStoreMySQL(this.config.databaseUrl, this.config.databaseUserName, this.config.databasePassword);

@@ -242,18 +242,6 @@ public class DataStoreYML extends DataStore{
 
     @Override
     void close() {
-        if (!FCConfig.scheduler.isShutdown() && !FCConfig.scheduler.isTerminated()){
-            try {
-                FCConfig.scheduler.shutdown();
-                boolean success = FCConfig.scheduler.awaitTermination(30, TimeUnit.SECONDS);
-                if (!success){
-                    GriefPreventionPlus.addLogEntry("Failed to close DataStoreYML, TimeOut of 30 seconds Reached, this is really bad! Terminating all of them now!");
-                    FCConfig.scheduler.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         //Nothing to close :D
     }
 
