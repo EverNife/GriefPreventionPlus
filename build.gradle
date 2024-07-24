@@ -1,5 +1,5 @@
 group = 'net.kaikk.mc'
-version = '13.7'
+version = '13.8'
 
 apply plugin: 'java'
 

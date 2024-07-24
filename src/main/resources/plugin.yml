@@ -1,6 +1,6 @@
 name: GriefPreventionPlus
 main: net.kaikk.mc.gpp.GriefPreventionPlus
-version: 13.7
+version: 13.8
 author: [KaiNoMood, EverNife]
 softdepend: [Vault, Multiverse-Core, My Worlds, MystCraft, Transporter, TheUnderground, WorldGuard, WorldEdit]
 loadbefore: [TheUnderground, GriefPrevention]
