@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package net.kaikk.mc.gpp;
 
 import br.com.finalcraft.gpp.config.FCConfig;
+import br.com.finalcraft.gpp.config.GPPCfgExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -242,7 +243,7 @@ public class DataStoreYML extends DataStore{
 
     @Override
     void close() {
-        //Nothing to close :D
+        GPPCfgExecutor.shutdownExecutor();
     }
 
     private Integer lastestID = null;

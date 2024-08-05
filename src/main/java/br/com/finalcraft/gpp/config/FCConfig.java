@@ -11,4 +11,8 @@ public class FCConfig extends Config {
 		this.enableSmartCache();
 	}
 
+	@Override
+	public void saveAsync() {
+		GPPCfgExecutor.getExecutorService().submit(() -> this.save());
+	}
 }
