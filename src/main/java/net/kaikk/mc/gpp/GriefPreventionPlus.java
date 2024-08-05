@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+import br.com.finalcraft.evernifecore.metrics.Metrics;
 import br.com.finalcraft.gpp.config.FCConfig;
 import net.kaikk.mc.gpp.integration.EverNifeCoreIntegration;
 import org.bukkit.Bukkit;
@@ -231,6 +232,13 @@ public class GriefPreventionPlus extends JavaPlugin {
 		}
 		
 		addLogEntry("Boot finished.");
+
+		try {
+			FCConfig.class.toString();
+			new Metrics(this, 22893); //GriefPreventionPlus under EverNife's bstats, just for tracking.
+		}catch (Throwable ignored){
+
+		}
 	}
 
 	@Override
